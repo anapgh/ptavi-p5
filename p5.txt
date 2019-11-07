@@ -2,7 +2,7 @@
 
 Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abrir con Wireshark. Se pide rellenar las cuestiones que se plantean en este guión en el fichero p5.txt que encontrarás también en el repositorio.
 
-  * Observa que las tramas capturadas corresponden a una sesión SIP con Ekiga, un cliente de VoIP para GNOME. Responde a las siguientes cuestiones:
+  2. Observa que las tramas capturadas corresponden a una sesión SIP con Ekiga, un cliente de VoIP para GNOME. Responde a las siguientes cuestiones:
     * ¿Cuántos paquetes componen la captura?
 	954
     * ¿Cuánto tiempo dura la captura?
@@ -10,13 +10,16 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
     * ¿Qué IP tiene la máquina donde se ha efectuado la captura? ¿Se trata de una IP pública o de una IP privada? ¿Por qué lo sabes?
 	La máquina donde se ha efectuado la captura es: 192.168.1.34, es una IP 	privada ya que va en el rango 192.168.0.0-192.168.255.255
 
-  * Antes de analizar las tramas, mira las estadísticas generales que aparecen en el menú de Statistics. En el apartado de jerarquía de protocolos (Protocol Hierarchy) se puede ver el porcentaje del tráfico correspondiente al protocolo TCP y UDP.
+  3. Antes de analizar las tramas, mira las estadísticas generales que aparecen en el menú de Statistics. En el apartado de jerarquía de protocolos (Protocol Hierarchy) se puede ver el porcentaje del tráfico correspondiente al protocolo TCP y UDP.
     * ¿Cuál de los dos es mayor? ¿Tiene esto sentido si estamos hablando de una aplicación que transmite en tiempo real?
 	Es mayor UDP(96,2) que TCP(2.1). Si, si tiene sentido ya que RTP se encapsula en UDP, además TCP no es válido para transmitir en tiempo real(se centra más en renvios de 		paquetes, fiabilidad etc..).
 	
     * ¿Qué otros protocolos podemos ver en la jerarquía de protocolos? ¿Cuales crees que son señal y cuales ruido?
 	SIP, SIP/SDP, RTP, DNS, HTTP, ICMP, ARP, STUN. 	
-  * Observa por encima el flujo de tramas en el menú de Statistics en IO Graphs. La captura que estamos viendo incluye desde la inicialización (registro) de la aplicación hasta su finalización, con una llamada entremedias.
+	Señal: SIP, SIP/SDP, RPT, STUN. 
+	Ruido: HTTP, ICMP, DNS, ARP.
+
+  4. Observa por encima el flujo de tramas en el menú de Statistics en IO Graphs. La captura que estamos viendo incluye desde la inicialización (registro) de la aplicación hasta su finalización, con una llamada entremedias.
     * Filtra por sip para conocer cuándo se envían paquetes SIP. ¿En qué segundos tienen lugar esos envíos?
 	Segundo 7 : Paquetes 46,50,51,54,56,57
 	Segundo 14 : Paquetes 84,85,86
@@ -28,22 +31,31 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
 	Segundos del 17-21, y del 23-38.
   [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
-  * Analiza las dos primeras tramas de la captura.
+  5. Analiza las dos primeras tramas de la captura.
     * ¿Qué servicio es el utilizado en estas tramas?
+	DNS
     * ¿Cuál es la dirección IP del servidor de nombres del ordenador que ha lanzado Ekiga?
+	80.58.61.250
     * ¿Qué dirección IP (de ekiga.net) devuelve el servicio de nombres?
+	86.64.162.35
 
-  * A continuación, hay más de una docena de tramas TCP/HTTP.
+  6. A continuación, hay más de una docena de tramas TCP/HTTP.
     * ¿Podrías decir la URL que se está pidiendo?
+	Nos está haciendo un GET en el que pide la dirección: http://ekiga.net/ip/.
     * ¿Qué user agent (UA) la está pidiendo?
+	User-Agent: Eriga\r\n
     * ¿Qué devuelve el servidor?
+	HTTP/1.1 200 OK.
     * Si lanzamos el navegador web, por ejemplo, Mozilla Firefox, y vamos a la misma URL, ¿qué recibimos? ¿Qué es, entonces, lo que está respondiendo el servidor?
+	Nos devuelve una IP: 95.22.191.240, que es como nos ve el servidor, es decir la IP pública.
 
-  * Hasta la trama 45 se puede observar una secuencia de tramas del protocolo STUN.
+  7. Hasta la trama 45 se puede observar una secuencia de tramas del protocolo STUN.
     * ¿Por qué se hace uso de este protocolo?
+	STUN es la abreviatura de “Simple Traversal of User Datagram Protocol through Network Address Translators". Se usa para "traducir" UDP para que los dispositivos que estén detrás 	de NAT descubran características de la conexión( Como IP Publica, tipo de NAT, puerto...).
     * ¿Podrías decir si estamos tras un NAT o no?
+	Sí, si que estamos detrás de NAT (router, firewall, etc ) ya que para eso se usa STUN. 	
 
-  * La trama 46 es la primera trama SIP. En un entorno como el de Internet, lo habitual es desconocer la dirección IP de la otra parte al realizar una llamada. Por eso, todo usuario registra su localización en un servidor Registrar. El Registrar guarda información sobre los usuarios en un servidor de localización que puede ser utilizado para localizar usuarios.
+  8. La trama 46 es la primera trama SIP. En un entorno como el de Internet, lo habitual es desconocer la dirección IP de la otra parte al realizar una llamada. Por eso, todo usuario registra su localización en un servidor Registrar. El Registrar guarda información sobre los usuarios en un servidor de localización que puede ser utilizado para localizar usuarios.
     * ¿Qué dirección IP tiene el servidor Registrar?
     * ¿A qué puerto (del servidor Registrar) se envían los paquetes SIP?
     * ¿Qué método SIP utiliza el UA para registrarse?
