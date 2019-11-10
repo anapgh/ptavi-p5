@@ -121,10 +121,16 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
 	
   13. Elige un paquete RTP de audio. Analiza el flujo de audio en Telephony -> RTP -> Stream Analysis.
     * ¿Cuánto valen el delta y el jitter para el primer paquete que ha llegado?
+	- Delta: 0.00ms
+	- Jitter: 0.00ms
     * ¿Podemos saber si éste es el primer paquete que nos han enviado?
+	Si, porque esta marcado el campo 'Marker'.
     * Los valores de jitter son menores de 10ms hasta un paquete dado. ¿Cuál?
+	El paquete 247
     * ¿A qué se debe el cambio tan brusco del jitter?
+	Porque ha tenido un delta muy alto de 554.74 ms, es decir, ha habido una diferencia de tiempo del paquete este al anterior de 554.74ms, por lo que hay que coger un jitter más alto para no perder paquetes. esto ha podido ocurrir por una congestión en la red.
     * ¿Es comparable el cambio en el valor de jitter con el del delta? ¿Cual es más grande?
+	Si que guardan relación. El valor más grande es de delta, que es mucho mayor.
 
   14. En Telephony selecciona el menú VoIP calls. Verás que se lista la llamada de voz IP capturada en una ventana emergente. Selecciona esa llamada y pulsa el botón Play Streams.
     * ¿Cuánto dura la conversación?
