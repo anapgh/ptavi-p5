@@ -85,14 +85,21 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
     * ¿Tiene éxito el primer intento? ¿Cómo lo sabes?
 	No, porque la respuesta al 'INVITE' es "407 Proxy Authentication Required", es decir, le esta diciendo que neecsita autorización del proxy.
     * ¿En qué se diferencia el segundo INVITE más abajo del primero? ¿A qué crees que se debe esto?
-	El primer intento tiene 982bytes en cambio el segundo tiene 1181bytes, y esto es debido a que el segundo intento tiene una etiqueta 'Proxy-Authorization' que venia del Invite en el '407 Proxy Authentication Required' en el cual lleva los datos de autorización del proxy. Con eta autorización, ya recibe el "200 OK"
+	El primer intento tiene 982bytes en cambio el segundo tiene 1181bytes, y esto es debido a que el segundo intento tiene la cabecera 'Proxy-Authorization' que venia del Invite en el '407 Proxy Authentication Required' en el cual lleva los datos de autorización del proxy. Con esta autorización, ya recibe el "200 OK"
 
   11. Una vez conectado, estudia el intercambio de tramas.
     * ¿Qué protocolo(s) se utiliza(n)? ¿Para qué sirven estos protocolos?
+	- RTP: RTP, que es el protocolo básico de transporte multimedia en internet en tiempo real.
+	- H. 261 no es un protocolo, es una codificación dentro de RTP que se usa para la compresión de video, pero wireshark la filtra por protocolo.	
     * ¿Cuál es el tamaño de paquete de los mismos?
+	Los paquetes de RTP de 214 bytes (es voz 'cogida' periodicamente con el mismo periodo).
+	Para H. 261 el tamaño de los paquetes varia.
     * ¿Se utilizan bits de padding?
+	Filtrando los paquetes con 'rtp.padding == 1' vemos que no aparece ningún paquete que tenga bits de relleno.  
     * ¿Cuál es la periodicidad de los paquetes (en origen; nota que la captura es en destino)?
+	Tiene una periodicidad de Timestamps = 160 segundos
     * ¿Cuántos bits/segundo se envían?
+	Si tienen 1712 bits en total y se mandan cada 160 segundos, haciendo una regla de tres, nos dan 10.7 bits/segundo
 
   [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
