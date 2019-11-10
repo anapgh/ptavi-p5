@@ -8,11 +8,11 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
     * ¿Cuánto tiempo dura la captura?
 	56.149345 segundos
     * ¿Qué IP tiene la máquina donde se ha efectuado la captura? ¿Se trata de una IP pública o de una IP privada? ¿Por qué lo sabes?
-	La máquina donde se ha efectuado la captura es: 192.168.1.34, es una IP 	privada ya que va en el rango 192.168.0.0-192.168.255.255
+	La máquina donde se ha efectuado la captura es: 192.168.1.34, es una IP privada ya que va en el rango 192.168.0.0-192.168.255.255
 
   3. Antes de analizar las tramas, mira las estadísticas generales que aparecen en el menú de Statistics. En el apartado de jerarquía de protocolos (Protocol Hierarchy) se puede ver el porcentaje del tráfico correspondiente al protocolo TCP y UDP.
     * ¿Cuál de los dos es mayor? ¿Tiene esto sentido si estamos hablando de una aplicación que transmite en tiempo real?
-	Es mayor UDP(96,2) que TCP(2.1). Si, si tiene sentido ya que RTP se encapsula en UDP, además TCP no es válido para transmitir en tiempo real(se centra más en renvios de 		paquetes, fiabilidad etc..).
+	Es mayor UDP(96,2) que TCP(2.1). Si, si tiene sentido ya que RTP se encapsula en UDP, además TCP no es válido para transmitir en tiempo real(se centra más en renvios de paquetes, fiabilidad etc..).
 	
     * ¿Qué otros protocolos podemos ver en la jerarquía de protocolos? ¿Cuales crees que son señal y cuales ruido?
 	SIP, SIP/SDP, RTP, DNS, HTTP, ICMP, ARP, STUN. 	
@@ -51,31 +51,43 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
 
   7. Hasta la trama 45 se puede observar una secuencia de tramas del protocolo STUN.
     * ¿Por qué se hace uso de este protocolo?
-	STUN es la abreviatura de “Simple Traversal of User Datagram Protocol through Network Address Translators". Se usa para "traducir" UDP para que los dispositivos que estén detrás 	de NAT descubran características de la conexión( Como IP Publica, tipo de NAT, puerto...).
+	STUN es la abreviatura de “Simple Traversal of User Datagram Protocol through Network Address Translators". Se usa para "traducir" UDP para que los dispositivos que estén detrás de NAT descubran características de la conexión( Como IP Publica, tipo de NAT, puerto...).
     * ¿Podrías decir si estamos tras un NAT o no?
 	Sí, si que estamos detrás de NAT (router, firewall, etc ) ya que para eso se usa STUN. 	
 
   8. La trama 46 es la primera trama SIP. En un entorno como el de Internet, lo habitual es desconocer la dirección IP de la otra parte al realizar una llamada. Por eso, todo usuario registra su localización en un servidor Registrar. El Registrar guarda información sobre los usuarios en un servidor de localización que puede ser utilizado para localizar usuarios.
     * ¿Qué dirección IP tiene el servidor Registrar?
+	La dirección a la que enviamos el mensaje es la 86.64.162.35 , pero si analizamos más mensajes SIP vemos que se trata de un servidor PROXY y que podría no ser el servidor registrar asique no podemos saberlo con certeza.
     * ¿A qué puerto (del servidor Registrar) se envían los paquetes SIP?
+	5063
     * ¿Qué método SIP utiliza el UA para registrarse?
+	REGISTER 
     * Además de REGISTER, ¿podrías decir qué instrucciones SIP entiende el UA?
+	INVITE, ACK, OPTIONS, BYE, CANCEL, NOTIFY, REFER, MESSAGE
 
   [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
-  * Fijémonos en las tramas siguientes a la número 46:
+  9. Fijémonos en las tramas siguientes a la número 46:
     * ¿Se registra con éxito en el primer intento?
+	No porque le contestan con '401 Unauthorized'.
     * ¿Cómo sabemos si el registro se ha realizado correctamente o no?
+	Cuando la respuesta del servidor al mensaje REGISTER es '200 OK'.
     * ¿Podrías identificar las diferencias entre el primer intento y el segundo de registro? (fíjate en el tamaño de los paquetes y mira a qué se debe el cambio)
+	El primer intento tiene 523bytes en cambio el segundo tiene 712bytes, y esto es debido a que el segundo intento tiene una cabecera 'Authorization' donde grex contesta con un 'response' que es el numero resultante de aplicar una clave al 'nonce' que venia del Register en el '401 Unauthorized'
     * ¿Cuánto es el valor del tiempo de expiración de la sesión? Indica las unidades.
+	Expires: 3600 segundos
 
-  * Una vez registrados, podemos efectuar una llamada. Vamos a probar con el servicio de eco de Ekiga que nos permite comprobar si nos hemos conectado correctamente. El servicio de eco tiene la dirección sip:500@ekiga.net. Veamos el INVITE de cerca.
+  10. Una vez registrados, podemos efectuar una llamada. Vamos a probar con el servicio de eco de Ekiga que nos permite comprobar si nos hemos conectado correctamente. El servicio de eco tiene la dirección sip:500@ekiga.net. Veamos el INVITE de cerca.
     * ¿Puede verse el nombre del que efectúa la llamada, así como su dirección SIP?
+	En el paquete 84 podemos ver el 'INVITE',  en él  observamos en la cabecera 'From' el nombre que efectúa la llamada: "Gregorio Robles", y su dirección SIP: grex@ekiga.net"
     * ¿Qué es lo que contiene el cuerpo de la trama? ¿En qué formato/protocolo está?
+	Contiene una descripción de la sesión, por eso usa el protocolo SDP (Session Description Protocol)
     * ¿Tiene éxito el primer intento? ¿Cómo lo sabes?
+	No, porque la respuesta al 'INVITE' es "407 Proxy Authentication Required", es decir, le esta diciendo que neecsita autorización del proxy.
     * ¿En qué se diferencia el segundo INVITE más abajo del primero? ¿A qué crees que se debe esto?
+	El primer intento tiene 982bytes en cambio el segundo tiene 1181bytes, y esto es debido a que el segundo intento tiene una etiqueta 'Proxy-Authorization' que venia del Invite en el '407 Proxy Authentication Required' en el cual lleva los datos de autorización del proxy. Con eta autorización, ya recibe el "200 OK"
 
-  * Una vez conectado, estudia el intercambio de tramas.
+  11. Una vez conectado, estudia el intercambio de tramas.
     * ¿Qué protocolo(s) se utiliza(n)? ¿Para qué sirven estos protocolos?
     * ¿Cuál es el tamaño de paquete de los mismos?
     * ¿Se utilizan bits de padding?
@@ -84,29 +96,29 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
 
   [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
-  * Vamos a ver más a fondo el intercambio RTP. En Telephony hay una opción RTP. Empecemos mirando los flujos RTP.
+  12. Vamos a ver más a fondo el intercambio RTP. En Telephony hay una opción RTP. Empecemos mirando los flujos RTP.
     * ¿Cuántos flujos hay? ¿por qué?
     * ¿Cuántos paquetes se pierden?
     * ¿Cuál es el valor máximo del delta? ¿Y qué es lo que significa el valor de delta?
     * ¿Cuáles son los valores de jitter (medio y máximo)? ¿Qué quiere decir eso? ¿Crees que estamos ante una conversación de calidad?
 
-  * Elige un paquete RTP de audio. Analiza el flujo de audio en Telephony -> RTP -> Stream Analysis.
+  13. Elige un paquete RTP de audio. Analiza el flujo de audio en Telephony -> RTP -> Stream Analysis.
     * ¿Cuánto valen el delta y el jitter para el primer paquete que ha llegado?
     * ¿Podemos saber si éste es el primer paquete que nos han enviado?
     * Los valores de jitter son menores de 10ms hasta un paquete dado. ¿Cuál?
     * ¿A qué se debe el cambio tan brusco del jitter?
     * ¿Es comparable el cambio en el valor de jitter con el del delta? ¿Cual es más grande?
 
-  * En Telephony selecciona el menú VoIP calls. Verás que se lista la llamada de voz IP capturada en una ventana emergente. Selecciona esa llamada y pulsa el botón Play Streams.
+  14. En Telephony selecciona el menú VoIP calls. Verás que se lista la llamada de voz IP capturada en una ventana emergente. Selecciona esa llamada y pulsa el botón Play Streams.
     * ¿Cuánto dura la conversación?
     * ¿Cuáles son sus SSRC? ¿Por qué hay varios SSRCs? ¿Hay CSRCs?
 
-  * Identifica la trama donde se finaliza la conversación.
+  15. Identifica la trama donde se finaliza la conversación.
     * ¿Qué método SIP se utiliza?
     * ¿En qué trama(s)?
     * ¿Por qué crees que se envía varias veces?
 
-  * Finalmente, se cierra la aplicación de VozIP.
+  16. Finalmente, se cierra la aplicación de VozIP.
     * ¿Por qué aparece una instrucción SIP del tipo REGISTER?
     * ¿En qué trama sucede esto?
     * ¿En qué se diferencia con la instrucción que se utilizó con anterioridad (al principio de la sesión)?
@@ -115,18 +127,18 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
 
 ***** Captura de una sesión SIP
 
-  * Dirígete a la web de IPTel (https://serweb.iptel.org/user/reg/index.php) con el navegador y créate una cuenta SIP.  Recibirás un correo electrónico de confirmación en la dirección que has indicado al registrarte.
+  17. Dirígete a la web de IPTel (https://serweb.iptel.org/user/reg/index.php) con el navegador y créate una cuenta SIP.  Recibirás un correo electrónico de confirmación en la dirección que has indicado al registrarte.
 
-  * Lanza Ekiga, y configúralo con los datos de la cuenta que te acabas de crear. Para ello, puedes ir al menú ``Editar'' y seleccionar ``Cuentas''. Tendrás que rellenar los campos de manera similar a lo que se puede ver en la imagen a continuación (recuerda poner tu nombre de usuario en lugar de ``grex''). Comprueba que estás conectado (En la barra al final de la ventana podrás ver ``Registrado''). Al terminar, cierra completamente Ekiga.
+  18. Lanza Ekiga, y configúralo con los datos de la cuenta que te acabas de crear. Para ello, puedes ir al menú ``Editar'' y seleccionar ``Cuentas''. Tendrás que rellenar los campos de manera similar a lo que se puede ver en la imagen a continuación (recuerda poner tu nombre de usuario en lugar de ``grex''). Comprueba que estás conectado (En la barra al final de la ventana podrás ver ``Registrado''). Al terminar, cierra completamente Ekiga.
 (en el guión en PDF en este punto podrás ver una gráfica)
 
-  * Captura una sesión SIP de una conversación con el número SIP sip:music@sip.iptel.org. Recuerda que has de comenzar a capturar tramas antes de arrancar Ekiga para ver todo el proceso.
+  19. Captura una sesión SIP de una conversación con el número SIP sip:music@sip.iptel.org. Recuerda que has de comenzar a capturar tramas antes de arrancar Ekiga para ver todo el proceso.
 
-  * Observa las diferencias en el inicio de la conversación entre el entorno del laboratorio y el del ejercicio anterior:
+  20. Observa las diferencias en el inicio de la conversación entre el entorno del laboratorio y el del ejercicio anterior:
     * ¿Se utilizan DNS y STUN? ¿Por qué?
     * ¿Son diferentes el registro y la descripción de la sesión?
 
-  * Identifica las diferencias existentes entre esta conversación y la conversación anterior:
+  21. Identifica las diferencias existentes entre esta conversación y la conversación anterior:
     * ¿Cuántos flujos tenemos?
     * ¿Cuál es su periodicidad?
     * ¿Cuánto es el valor máximo del delta y los valores medios y máximo del jitter?
@@ -135,6 +147,6 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
 
   [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
-  * Filtra por los paquetes SIP de la captura y guarda *únicamente* los paquetes SIP como p5.pcapng. Abre el fichero guardado para cerciorarte de que lo has hecho bien. Deberás añadirlo al repositorio.
+  22. Filtra por los paquetes SIP de la captura y guarda *únicamente* los paquetes SIP como p5.pcapng. Abre el fichero guardado para cerciorarte de que lo has hecho bien. Deberás añadirlo al repositorio.
 
 [Al terminar la práctica, realiza un push para sincronizar tu repositorio GitLab]
