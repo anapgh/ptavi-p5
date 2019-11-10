@@ -105,10 +105,20 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
 
   12. Vamos a ver más a fondo el intercambio RTP. En Telephony hay una opción RTP. Empecemos mirando los flujos RTP.
     * ¿Cuántos flujos hay? ¿por qué?
+	- Flujo de audio: G. 771. 
+	- Flujo de video: H. 261.
+	Hay dos flujos porque se trata de una conferencia a tiempo real.
     * ¿Cuántos paquetes se pierden?
+	No se pierde ningun paquete.
     * ¿Cuál es el valor máximo del delta? ¿Y qué es lo que significa el valor de delta?
+	El valor máximo de delta es 1290.44ms
+	La delta es la diferecia entre un paquete y el anterior (Retardo).
     * ¿Cuáles son los valores de jitter (medio y máximo)? ¿Qué quiere decir eso? ¿Crees que estamos ante una conversación de calidad?
-
+	- Audio: Mean Jitter: 42.50ms    Máx Jitter: 119.64ms
+	- Video: Mean Jitter: 153.24ms   Máx Jitter: 183.10ms
+	Quiere decir la media de variacion en el tiempo de llegada de paquetes, y el máximo valor de variación entre paquetes. 
+	Una conversacion de calidad tiene un jitter menor a 100ms. Si el valor de jitter es mayor que estos valores ya no seria una conversacion de calidad. En este caso, los dos flujos (183ms y 119 ms) estan por encima de los 100 ms por lo que no seria una conversacion de calidad.
+	
   13. Elige un paquete RTP de audio. Analiza el flujo de audio en Telephony -> RTP -> Stream Analysis.
     * ¿Cuánto valen el delta y el jitter para el primer paquete que ha llegado?
     * ¿Podemos saber si éste es el primer paquete que nos han enviado?
