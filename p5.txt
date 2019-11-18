@@ -172,24 +172,24 @@ Se ha capturado una sesión SIP con Ekiga (archivo sip.cap.gz), que se puede abr
 
   20. Observa las diferencias en el inicio de la conversación entre el entorno del laboratorio y el del ejercicio anterior:
     * ¿Se utilizan DNS y STUN? ¿Por qué?
-	
+	Si se utilizan DNS pero no se utiliza STUN.
+	STUN no se utiliza debido a que ya sabemos su IP pública. Y si DNS, porque se encarga de averiguar en que IP están las maquinas que me quiero conectar.
     * ¿Son diferentes el registro y la descripción de la sesión?
-
+	Si, el registro no tiene descripción de la sesión, en cambio el invite si.
 
   21. Identifica las diferencias existentes entre esta conversación y la conversación anterior:
     * ¿Cuántos flujos tenemos?
 	2 flujos de audio. RTP
     * ¿Cuál es su periodicidad?
-	Tienen ambos flujos una periodicidad de 320 segundos
+	Tiene una periodicidad de 20ms
     * ¿Cuánto es el valor máximo del delta y los valores medios y máximo del jitter?
-	Delta máx:
-	Delta mean:
-	Jitter máx:
+	Delta máx: 77.76 ms
+	Jitter mean: 0.36 ms
+	Jitter máx: 7.25 ms
     * ¿Podrías reproducir la conversación desde Wireshark? ¿Cómo? Comprueba que poniendo un valor demasiado pequeño para el buffer de jitter, la conversación puede no tener la calidad necesaria.
-	
-
+	Si, mediante Telephony ->VoIP Calls -> eligiendo y dando play.
     * ¿Sabrías decir qué tipo de servicio ofrece sip:music@iptel.org?
-	
+	Nos ofrece un servicio para escuchar una canción.	
 
   [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
